@@ -1,0 +1,41 @@
+from machine import Pin, PWM
+from time import sleep
+
+pwm = PWM(Pin(15))
+pwm.freq(50)
+buzzer = Pin(14, Pin.OUT)
+red = Pin(13, Pin.OUT)
+green = Pin(12, Pin.OUT)
+blue = Pin(11, Pin.OUT)
+
+def servo(angle):
+    c = int((34.45 * angle) + 1800)
+    pwm.duty_u16(c)
+
+while True:
+    for i in range(0, 181, 20):  # Changed range to include 180
+        servo(i)
+        print(i)
+        
+        # RGB LED lights up blue when the servo changes angle
+        blue.value(1)
+        red.value(0)
+        green.value(0)
+        sleep(0.5)
+        
+        # Switch back to red
+        red.value(1)
+        blue.value(0)
+        sleep(0.5)
+
+        if i == 180:  # Check if the current angle is 180
+            buzzer.value(1)  # Turn on the buzzer
+            green.value(1)   # Light up green
+            red.value(0)
+            print("Maximum angle reached.")
+            sleep(1)
+        else:
+            buzzer.value(0)  # Turn off the buzzer
+            green.value(0)
+
+        sleep(0.5)
